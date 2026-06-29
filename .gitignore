@@ -21,8 +21,10 @@ config
 .DS_Store
 Thumbs.db
 
-# Docs
-.docs/
-.screenshots/
+# Docs & screenshots
+docs/
+screenshots/
+question/
+
+# Optional
 README.md
-.question/
