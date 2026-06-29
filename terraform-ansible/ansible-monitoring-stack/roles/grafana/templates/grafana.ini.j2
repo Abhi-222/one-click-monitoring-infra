@@ -1,0 +1,12 @@
+[paths]
+data = {{ grafana_efs_mount_point }}
+logs = /var/log/grafana
+plugins = /var/lib/grafana/plugins
+provisioning = /etc/grafana/provisioning
+
+[server]
+http_port = {{ grafana_port }}
+
+[security]
+admin_user = {{ grafana_admin_user }}
+admin_password = {{ grafana_admin_password }}

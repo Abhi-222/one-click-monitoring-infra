@@ -1,0 +1,71 @@
+---
+- name: Create Node Exporter group
+  ansible.builtin.group:
+    name: "{{ node_exporter_group }}"
+    system: true
+    state: present
+
+- name: Create Node Exporter user
+  ansible.builtin.user:
+    name: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_group }}"
+    create_home: false
+    shell: /sbin/nologin
+    system: true
+    state: present
+
+- name: Download Node Exporter
+  ansible.builtin.get_url:
+    url: "{{ node_exporter_download_url }}"
+    dest: "/tmp/{{ node_exporter_archive }}"
+    mode: "0644"
+
+- name: Create Node Exporter install directory
+  ansible.builtin.file:
+    path: "{{ node_exporter_install_dir }}"
+    state: directory
+    owner: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_group }}"
+    mode: "0755"
+
+- name: Extract Node Exporter
+  ansible.builtin.unarchive:
+    src: "/tmp/{{ node_exporter_archive }}"
+    dest: /tmp
+    remote_src: true
+    creates: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+
+- name: Install Node Exporter binary
+  ansible.builtin.copy:
+    src: "/tmp/node_exporter-{{ node_exporter_version }}.linux-amd64/node_exporter"
+    dest: "{{ node_exporter_install_dir }}/node_exporter"
+    remote_src: true
+    owner: "{{ node_exporter_user }}"
+    group: "{{ node_exporter_group }}"
+    mode: "0755"
+  notify:
+    - Restart Node Exporter
+
+- name: Point Node Exporter current symlink to selected version
+  ansible.builtin.file:
+    src: "{{ node_exporter_install_dir }}"
+    dest: "{{ node_exporter_current_dir }}"
+    state: link
+    force: true
+
+- name: Create Node Exporter systemd service
+  ansible.builtin.template:
+    src: node_exporter.service.j2
+    dest: /etc/systemd/system/node_exporter.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload Systemd
+    - Restart Node Exporter
+
+- name: Enable and start Node Exporter service
+  ansible.builtin.systemd:
+    name: node_exporter
+    enabled: true
+    state: started

@@ -1,0 +1,85 @@
+---
+- name: Ensure Grafana EFS file system ID is provided
+  ansible.builtin.assert:
+    that:
+      - grafana_efs_file_system_id | length > 0
+    fail_msg: "Set grafana_efs_file_system_id to the Terraform output efs_id before running Grafana tasks."
+
+- name: Configure Grafana repository on RedHat family hosts
+  ansible.builtin.yum_repository:
+    name: grafana
+    description: Grafana OSS Repository
+    baseurl: https://rpm.grafana.com
+    gpgcheck: true
+    repo_gpgcheck: true
+    gpgkey: https://rpm.grafana.com/gpg.key
+    enabled: true
+  when: ansible_facts.os_family == "RedHat"
+
+- name: Install Grafana on RedHat family hosts
+  ansible.builtin.yum:
+    name: grafana
+    state: present
+  when: ansible_facts.os_family == "RedHat"
+
+- name: Install Grafana prerequisites on Debian family hosts
+  ansible.builtin.apt:
+    name:
+      - apt-transport-https
+      - software-properties-common
+    state: present
+    update_cache: true
+  when: ansible_facts.os_family == "Debian"
+
+- name: Add Grafana package key on Debian family hosts
+  ansible.builtin.get_url:
+    url: https://apt.grafana.com/gpg.key
+    dest: /usr/share/keyrings/grafana.key
+    mode: "0644"
+  when: ansible_facts.os_family == "Debian"
+
+- name: Configure Grafana repository on Debian family hosts
+  ansible.builtin.deb822_repository:
+    name: grafana
+    types: deb
+    uris: https://apt.grafana.com
+    suites: stable
+    components: main
+    signed_by: /usr/share/keyrings/grafana.key
+    state: present
+  when: ansible_facts.os_family == "Debian"
+
+- name: Install Grafana on Debian family hosts
+  ansible.builtin.apt:
+    name: grafana
+    state: present
+    update_cache: true
+  when: ansible_facts.os_family == "Debian"
+
+- name: Configure Grafana
+  ansible.builtin.template:
+    src: grafana.ini.j2
+    dest: "{{ grafana_config_file }}"
+    owner: root
+    group: grafana
+    mode: "0640"
+  notify:
+    - Restart Grafana
+
+- name: Ensure Grafana systemd service unit exists
+  ansible.builtin.template:
+    src: grafana.service.j2
+    dest: /etc/systemd/system/grafana-server.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - Reload Systemd
+    - Restart Grafana
+
+- name: Enable and start Grafana service
+  ansible.builtin.systemd:
+    name: grafana-server
+    enabled: true
+    state: started
+  when: ansible_facts.os_family is defined

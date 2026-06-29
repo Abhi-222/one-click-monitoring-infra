@@ -1,0 +1,13 @@
+[Unit]
+Description=Grafana Server
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=grafana
+Group=grafana
+ExecStart=/usr/sbin/grafana-server --config={{ grafana_config_file }} --homepath=/usr/share/grafana
+
+[Install]
+WantedBy=multi-user.target

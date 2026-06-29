@@ -1,0 +1,54 @@
+---
+- name: Create Grafana group
+  ansible.builtin.group:
+    name: "{{ grafana_group }}"
+    state: present
+    system: true
+
+- name: Create Grafana user
+  ansible.builtin.user:
+    name: "{{ grafana_user }}"
+    group: "{{ grafana_group }}"
+    create_home: false
+    shell: /sbin/nologin
+    system: true
+    state: present
+
+- name: Install Amazon EFS utilities on Amazon Linux
+  ansible.builtin.yum:
+    name: amazon-efs-utils
+    state: present
+  when: ansible_facts.distribution == "Amazon"
+
+- name: Create Grafana EFS mount point
+  ansible.builtin.file:
+    path: "{{ grafana_efs_mount_point }}"
+    state: directory
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_group }}"
+    mode: "0755"
+
+- name: Persist Grafana EFS mount
+  ansible.posix.mount:
+    path: "{{ grafana_efs_mount_point }}"
+    src: "{{ grafana_efs_file_system_id }}:/"
+    fstype: efs
+    opts: _netdev,tls
+    state: mounted
+  when: ansible_facts.distribution == "Amazon"
+
+- name: Persist Grafana EFS mount with NFS fallback
+  ansible.posix.mount:
+    path: "{{ grafana_efs_mount_point }}"
+    src: "{{ grafana_efs_file_system_id }}.efs.{{ aws_region }}.amazonaws.com:/"
+    fstype: nfs4
+    opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,_netdev
+    state: mounted
+  when: ansible_facts.distribution != "Amazon"
+
+- name: Ensure Grafana owns its shared data directory
+  ansible.builtin.file:
+    path: "{{ grafana_efs_mount_point }}"
+    owner: "{{ grafana_user }}"
+    group: "{{ grafana_group }}"
+    recurse: true

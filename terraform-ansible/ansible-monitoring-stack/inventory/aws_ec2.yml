@@ -1,0 +1,19 @@
+plugin: amazon.aws.aws_ec2
+regions:
+  - ap-south-1
+filters:
+  tag:Project: "Monitoring Infrastructure"
+  tag:Environment: dev
+  instance-state-name: running
+hostnames:
+  - private-ip-address
+compose:
+  ansible_host: "{{ public_ip_address if (public_ip_address | default('') != '') else private_ip_address }}"
+groups:
+  bastion: ec2_tags.Role | default('') == 'bastion'
+  monitoring: ec2_tags.Role | default('') == 'monitoring'
+keyed_groups:
+  - key: ec2_tags.Role
+    prefix: role
+  - key: ec2_tags.Project
+    prefix: project

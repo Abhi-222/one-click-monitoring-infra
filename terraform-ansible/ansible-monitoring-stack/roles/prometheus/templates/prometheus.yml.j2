@@ -1,0 +1,16 @@
+# Prometheus configuration (templated)
+global:
+  scrape_interval: {{ prometheus_scrape_interval }}
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:{{ prometheus_port }}']
+
+{% if prometheus_ec2_sd_enabled %}
+  - job_name: 'ec2'
+    ec2_sd_configs:
+      - region: {{ aws_region }}
+        port: {{ node_exporter_port }}
+{% endif %}

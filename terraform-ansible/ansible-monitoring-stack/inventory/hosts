@@ -1,0 +1,12 @@
+[bastion]
+# bastion ansible_host=<bastion-public-ip> ansible_user=ec2-user
+
+[prometheus]
+# prometheus-primary ansible_host=<prometheus-private-ip> ansible_user=ec2-user
+
+[grafana]
+# grafana-1 ansible_host=<grafana-private-ip> ansible_user=ec2-user
+
+[monitoring:children]
+prometheus
+grafana

@@ -1,0 +1,6 @@
+---
+# EFS role expects grafana variables to be set by inventory/group_vars
+grafana_efs_mount_point: /var/lib/grafana
+grafana_user: grafana
+grafana_group: grafana
+aws_region: ap-south-1
