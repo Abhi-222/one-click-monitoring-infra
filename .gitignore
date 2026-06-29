@@ -20,3 +20,9 @@ config
 .vscode/
 .DS_Store
 Thumbs.db
+
+# Docs
+.docs/
+.screenshots/
+README.md
+.question/
