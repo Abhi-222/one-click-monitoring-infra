@@ -1,0 +1,23 @@
+2026-06-26T13:11:06.683Z [INFO]  Terraform version: 1.15.6
+2026-06-26T13:11:06.684Z [DEBUG] using github.com/hashicorp/go-tfe v1.105.0
+2026-06-26T13:11:06.685Z [DEBUG] using github.com/hashicorp/hcl/v2 v2.24.0
+2026-06-26T13:11:06.686Z [DEBUG] using github.com/hashicorp/terraform-svchost v0.2.1
+2026-06-26T13:11:06.687Z [DEBUG] using github.com/zclconf/go-cty v1.18.0
+2026-06-26T13:11:06.687Z [INFO]  Go runtime version: go1.25.10
+2026-06-26T13:11:06.688Z [INFO]  CLI args: []string{"terraform", "init"}
+2026-06-26T13:11:06.689Z [DEBUG] Attempting to open CLI config file: /home/anurag/.terraformrc
+2026-06-26T13:11:06.690Z [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2026-06-26T13:11:06.691Z [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2026-06-26T13:11:06.701Z [DEBUG] ignoring non-existing provider search directory /home/anurag/.terraform.d/plugins
+2026-06-26T13:11:06.702Z [DEBUG] ignoring non-existing provider search directory /home/anurag/.local/share/terraform/plugins
+2026-06-26T13:11:06.703Z [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2026-06-26T13:11:06.703Z [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2026-06-26T13:11:06.706Z [INFO]  CLI command args: []string{"init"}
+2026-06-26T13:11:06.863Z [DEBUG] ReferenceTransformer: "var.backend_lock_table_name" references: []
+2026-06-26T13:11:06.864Z [DEBUG] ReferenceTransformer: "local.backend_bucket_id (expand)" references: []
+2026-06-26T13:11:06.865Z [DEBUG] ReferenceTransformer: "var.backend_bucket_name" references: []
+2026-06-26T13:11:06.866Z [DEBUG] Starting graph walk: walkInit
+[0m[1mInitializing provider plugins found in the configuration...[0m
+- Reusing previous version of hashicorp/aws from the dependency lock file
+2026-06-26T13:11:06.880Z [DEBUG] Service discovery for registry.terraform.io at https://registry.terraform.io/.well-known/terraform.json
+2026-06-26T13:11:06.984Z [DEBUG] GET https://registry.terraform.io/v1/providers/hashicorp/aws/versions

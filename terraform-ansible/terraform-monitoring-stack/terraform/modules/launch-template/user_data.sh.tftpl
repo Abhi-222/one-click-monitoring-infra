@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+yum update -y
+amazon-linux-extras install -y nginx1
+systemctl enable nginx
+systemctl start nginx
+
+# Format and mount the extra EBS volume for Prometheus TSDB persistence.
+if [ -b /dev/xvdb ]; then
+  if ! blkid /dev/xvdb; then
+    mkfs -t ext4 /dev/xvdb
+  fi
+  mkdir -p /prometheus-data
+  mount -o defaults /dev/xvdb /prometheus-data
+  echo '/dev/xvdb /prometheus-data ext4 defaults,nofail 0 2' >> /etc/fstab
+fi
+
+# Placeholder for Grafana, Prometheus, Alertmanager, and Node Exporter installation
+# In a full assignment implementation, install Docker/Ansible or custom systemd units here.
+
+echo "Grafana port ${grafana_port}" > /tmp/monitoring_setup.log
+echo "Node exporter port ${node_exporter_port}" >> /tmp/monitoring_setup.log

@@ -1,0 +1,65 @@
+@Library('my-shared-library') _
+
+pipeline {
+    agent any
+
+    parameters {
+        string(name: 'BASTION_IP', defaultValue: '', description: 'Public IP of the bastion host')
+        string(name: 'EFS_ID', defaultValue: '', description: 'EFS File System ID')
+        choice(name: 'ENVIRONMENT', choices: ['dev'], description: 'Target environment')
+        string(name: 'NOTIFICATION_EMAIL', defaultValue: '', description: 'Email address for status notifications (leave blank to disable)')
+    }
+
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('aws-credentials-id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-credentials-id')
+        AWS_DEFAULT_REGION    = 'ap-south-1'
+        ANSIBLE_DIR           = 'terraform-ansible/ansible-monitoring-stack'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Ansible Host Configuration') {
+            steps {
+                script {
+                    runAnsible(
+                        bastionIp: params.BASTION_IP,
+                        efsId: params.EFS_ID,
+                        environment: params.ENVIRONMENT,
+                        directory: env.ANSIBLE_DIR,
+                        credentialsId: 'aws-ssh-key-id'
+                    )
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            script {
+                if (params.NOTIFICATION_EMAIL) {
+                    mail to: params.NOTIFICATION_EMAIL,
+                         subject: "SUCCESS: Jenkins Downstream Job '${env.JOB_NAME}' [Build #${env.BUILD_NUMBER}]",
+                         body: "The Ansible host configuration succeeded!\n\nView details: ${env.BUILD_URL}"
+                }
+            }
+        }
+        failure {
+            script {
+                if (params.NOTIFICATION_EMAIL) {
+                    mail to: params.NOTIFICATION_EMAIL,
+                         subject: "FAILURE: Jenkins Downstream Job '${env.JOB_NAME}' [Build #${env.BUILD_NUMBER}]",
+                         body: "The Ansible host configuration failed!\n\nView details: ${env.BUILD_URL}"
+                }
+            }
+        }
+    }
+}

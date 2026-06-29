@@ -1,0 +1,88 @@
+@Library('my-shared-library') _
+
+pipeline {
+    agent any
+
+    parameters {
+        choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Terraform action to perform')
+        choice(name: 'ENVIRONMENT', choices: ['dev'], description: 'Target environment')
+        string(name: 'NOTIFICATION_EMAIL', defaultValue: 'admin@example.com', description: 'Email address for status notifications (leave blank to disable)')
+    }
+
+    environment {
+        AWS_ACCESS_KEY_ID     = credentials('aws-credentials-id')
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-credentials-id')
+        AWS_DEFAULT_REGION    = 'ap-south-1'
+        TF_DIR                = 'terraform-ansible/terraform-monitoring-stack/terraform'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Terraform Infrastructure Management') {
+            steps {
+                script {
+                    runTerraform(
+                        action: params.ACTION,
+                        environment: params.ENVIRONMENT,
+                        directory: env.TF_DIR
+                    )
+                }
+            }
+        }
+
+        stage('Trigger Downstream Configuration') {
+            when {
+                expression { params.ACTION == 'apply' }
+            }
+            steps {
+                dir(env.TF_DIR) {
+                    script {
+                        def bastionIp = sh(script: 'terraform output -raw bastion_public_ip', returnStdout: true).trim()
+                        def efsId = sh(script: 'terraform output -raw efs_id', returnStdout: true).trim()
+
+                        echo "Infrastructure provisioned successfully!"
+                        echo "Bastion IP: ${bastionIp}"
+                        echo "EFS ID: ${efsId}"
+                        echo "Triggering downstream Ansible configuration job..."
+
+                        build job: 'Downstream-Ansible-Config', wait: true, parameters: [
+                            string(name: 'BASTION_IP', value: bastionIp),
+                            string(name: 'EFS_ID', value: efsId),
+                            string(name: 'ENVIRONMENT', value: params.ENVIRONMENT),
+                            string(name: 'NOTIFICATION_EMAIL', value: params.NOTIFICATION_EMAIL)
+                        ]
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+        success {
+            script {
+                if (params.NOTIFICATION_EMAIL) {
+                    mail to: params.NOTIFICATION_EMAIL,
+                         subject: "SUCCESS: Jenkins Upstream Job '${env.JOB_NAME}' [Build #${env.BUILD_NUMBER}]",
+                         body: "The infrastructure provisioning succeeded!\n\nView details: ${env.BUILD_URL}"
+                }
+            }
+        }
+        failure {
+            script {
+                if (params.NOTIFICATION_EMAIL) {
+                    mail to: params.NOTIFICATION_EMAIL,
+                         subject: "FAILURE: Jenkins Upstream Job '${env.JOB_NAME}' [Build #${env.BUILD_NUMBER}]",
+                         body: "The infrastructure provisioning failed!\n\nView details: ${env.BUILD_URL}"
+                }
+            }
+        }
+    }
+}

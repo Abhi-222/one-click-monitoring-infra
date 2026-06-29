@@ -1,0 +1,22 @@
+# Ignore the shared library folder (which is a separate repository)
+jenkins-shared-library/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+*.backup
+tfplan
+.terraform.lock.hcl
+
+# Credentials & SSH Keys
+*.pem
+*.key
+credentials
+config
+
+# OS/IDE temporary files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db

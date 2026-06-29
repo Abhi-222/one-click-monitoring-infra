@@ -1,0 +1,41 @@
+flowchart TD
+    Step1["<img src='https://raw.githubusercontent.com/twbs/icons/main/icons/person-fill.svg' width='25' height='25'/><br/><b>Step 1: Trigger Build</b><br/>Admin inputs parameters"]
+    Step2["<img src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg' width='25' height='25'/> <img src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/terraform/terraform-original.svg' width='25' height='25'/><br/><b>Step 2: Provisioning (Upstream)</b><br/>Jenkinsfile.infra executes runTerraform"]
+    StateBackend["<img src='https://raw.githubusercontent.com/twbs/icons/main/icons/database-fill.svg' width='25' height='25'/><br/><b>Terraform Backend</b><br/>S3 State & DynamoDB Lock"]
+    Step3["<img src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg' width='25' height='25'/><br/><b>Step 3: Job Hand-Off</b><br/>Passes BASTION_IP & EFS_ID parameters"]
+    Step4["<img src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/jenkins/jenkins-original.svg' width='25' height='25'/> <img src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/ansible/ansible-original.svg' width='25' height='25'/><br/><b>Step 4: Configuration (Downstream)</b><br/>Jenkinsfile.ansible executes runAnsible"]
+    AWSInfra["<img src='https://cdn.jsdelivr.net/gh/devicons/devicon/icons/amazonwebservices/amazonwebservices-original.svg' width='25' height='25'/><br/><b>Step 5: Target Nodes Deployment</b><br/>Prometheus, Grafana, EFS & Security Groups"]
+    Step6["<img src='https://raw.githubusercontent.com/twbs/icons/main/icons/envelope-fill.svg' width='25' height='25'/><br/><b>Step 6: Status Notification</b><br/>Email alert sent to Administrator"]
+
+    Step1 -->|Trigger| Step2
+    Step2 <-->|State & Lock| StateBackend
+    Step2 -->|Provision| AWSInfra
+    Step2 -->|Success| Step3
+    Step3 -->|Trigger| Step4
+    Step4 -->|Configure| AWSInfra
+    Step2 -.->|Notify| Step6
+    Step4 -.->|Notify| Step6
+
+    classDef default fill:#FFFFFF,stroke:#B0BEC5,stroke-width:1px,color:#37474F;
+    classDef trigger fill:#F5F7FA,stroke:#455A64,stroke-width:2px,color:#37474F;
+    classDef upstream fill:#ECEFF1,stroke:#3F51B5,stroke-width:2px,color:#1A237E;
+    classDef downstream fill:#ECEFF1,stroke:#3F51B5,stroke-width:2px,color:#1A237E;
+    classDef handoff fill:#F5F7FA,stroke:#455A64,stroke-width:2px,color:#37474F;
+    classDef resource fill:#E0F2F1,stroke:#009688,stroke-width:2px,color:#004D40;
+    classDef notify fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px,color:#4A148C;
+
+    class Step1 trigger;
+    class Step2 upstream;
+    class Step3 handoff;
+    class Step4 downstream;
+    class StateBackend,AWSInfra resource;
+    class Step6 notify;
+
+    linkStyle 0 stroke:#37474F,stroke-width:2px;
+    linkStyle 1 stroke:#00897B,stroke-width:2px;
+    linkStyle 2 stroke:#37474F,stroke-width:2px;
+    linkStyle 3 stroke:#3949AB,stroke-width:2px;
+    linkStyle 4 stroke:#3949AB,stroke-width:2px;
+    linkStyle 5 stroke:#37474F,stroke-width:2px;
+    linkStyle 6 stroke:#8E24AA,stroke-width:1.5px,stroke-dasharray: 5 5;
+    linkStyle 7 stroke:#8E24AA,stroke-width:1.5px,stroke-dasharray: 5 5;

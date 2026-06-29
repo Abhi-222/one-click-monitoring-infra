@@ -1,0 +1,148 @@
+flowchart TB
+    %% =========================================================================
+    %% 1. EXTERNAL COMPONENTS
+    %% =========================================================================
+    Users((USERS))
+    Terraform[Terraform<br/>Infra-Provisioning]
+    S3[(S3 Backend Bucket<br/>terraform.tfstate)]
+    DynamoDB[(DynamoDB Lock Table<br/>terraform state locking)]
+
+    %% =========================================================================
+    %% 2. CLOUD INFRASTRUCTURE
+    %% =========================================================================
+    subgraph AWS[AWS Cloud]
+        subgraph VPC[VPC 10.0.0.0/16]
+            %% Gateways & Route Tables
+            IGW[Internet-Gateway]
+            NAT[NAT_Gateway]
+            PublicRT[Public_RT]
+            PrivateRT[Private_RT]
+            
+            %% Network Access Control Lists
+            PUB_NACL[PUB_NACL]
+            PRVT_NACL[PRVT_NACL]
+            
+            %% ALB Load Balancer
+            ALB[ALB<br/>alb-sg]
+
+            %% Availability Zone A
+            subgraph AZ1[Availability zone 1-a]
+                subgraph PubSubnet1[Public subnet]
+                    Bastion[Bastion Host<br/>bastion-sg]
+                end
+            end
+
+            %% Availability Zone B
+            subgraph AZ2[Availability zone 1-b]
+                subgraph PubSubnet2[Public subnet]
+                    %% Empty Public Subnet Placeholder
+                end
+            end
+
+            %% Scaling & Ingress Target Group
+            subgraph ASG[Auto Scaling group]
+                subgraph TG[Target group]
+                    subgraph PrvSubnet1[Private subnet - AZ 1-a]
+                        Instance1["monitoring-asg-instance<br/>(Grafana, Prometheus, Alertmanager, Node Exporter)<br/>monitoring-sg"]
+                    end
+                    
+                    subgraph PrvSubnet2[Private subnet - AZ 1-b]
+                        Instance2["monitoring-asg-instance<br/>(Grafana, Prometheus, Alertmanager, Node Exporter)<br/>monitoring-sg"]
+                    end
+                end
+            end
+
+            %% Shared Storage
+            EFS[Amazon EFS<br/>Shared Persistent Storage]
+        end
+    end
+
+    %% =========================================================================
+    %% 3. PIPELINE & TRAFFIC ROUTING
+    %% =========================================================================
+    
+    %% Terraform Provisioning Connections
+    Terraform --> S3
+    Terraform --> DynamoDB
+    Terraform --> VPC
+    S3 <--> DynamoDB
+
+    %% Ingress Flow
+    Users --> ALB
+    IGW --> PublicRT
+    IGW --> ALB
+    ALB --> TG
+
+    %% NACL & Route Traffic Flows
+    PUB_NACL --> PublicSubnets[Public Subnets Layer]
+    PRVT_NACL --> PrivateSubnets[Private Subnets Layer]
+    
+    NAT --> PrivateRT
+    PublicRT --> PubSubnet1
+    PublicRT --> PubSubnet2
+    PrivateRT --> PrvSubnet1
+    PrivateRT --> PrvSubnet2
+
+    %% Administration SSH Tunnels
+    Bastion -->|SSH| Instance1
+    Bastion -->|SSH| Instance2
+
+    %% EFS Shared Storage Volumes
+    EFS -->|/shared/grafana| Instance1
+    EFS -->|/shared/grafana| Instance2
+    EFS -->|/shared/prometheus| Instance1
+    EFS -->|/shared/prometheus| Instance2
+
+    %% =========================================================================
+    %% 4. STYLING & CLASS DEFINITIONS (Aligned with Diagram Colors)
+    %% =========================================================================
+    classDef default fill:#FFFFFF,stroke:#37474F,stroke-width:1px,color:#263238;
+    classDef external fill:#F5F7FA,stroke:#455A64,stroke-width:1.5px;
+    
+    %% Purple AWS Elements
+    classDef purpleEl fill:#F3E5F5,stroke:#7B1FA2,stroke-width:2px,color:#4A148C;
+    class Users,IGW,NAT,PUB_NACL,PRVT_NACL,VPC purpleEl;
+    
+    %% Light Green Public Subnets
+    classDef pubSub fill:#E8F5E9,stroke:#4CAF50,stroke-width:1.5px,color:#1B5E20;
+    class PubSubnet1,PubSubnet2 pubSub;
+
+    %% Light Blue Private Subnets
+    classDef prvSub fill:#E0F2F1,stroke:#009688,stroke-width:1.5px,color:#004D40;
+    class PrvSubnet1,PrvSubnet2 prvSub;
+
+    %% Red Security & Admin Elements
+    classDef adminEl fill:#FFEBEE,stroke:#D32F2F,stroke-width:2px,color:#C62828;
+    class Bastion adminEl;
+
+    %% Orange Scaling Elements
+    classDef scalingEl fill:#FFF3E0,stroke:#E65100,stroke-width:2px,color:#E65100;
+    class ASG,TG scalingEl;
+
+    %% Shared Storage Elements (Green)
+    classDef storageEl fill:#E8F5E9,stroke:#2E7D32,stroke-width:2px,color:#1B5E20;
+    class EFS storageEl;
+
+    %% Apply External Styles
+    class S3,DynamoDB,Terraform external;
+
+    %% Subgraph Styling
+    style AWS fill:#FAFAFA,stroke:#B0BEC5,stroke-width:1px;
+    style VPC fill:#FFFFFF,stroke:#7B1FA2,stroke-width:2.5px;
+    style AZ1 fill:#FAFAFA,stroke:#455A64,stroke-width:1px,stroke-dasharray: 5 5;
+    style AZ2 fill:#FAFAFA,stroke:#455A64,stroke-width:1px,stroke-dasharray: 5 5;
+    style PubSubnet1 fill:#E8F5E9,stroke:#4CAF50,stroke-width:1px;
+    style PubSubnet2 fill:#E8F5E9,stroke:#4CAF50,stroke-width:1px;
+    style PrvSubnet1 fill:#E0F2F1,stroke:#009688,stroke-width:1px;
+    style PrvSubnet2 fill:#E0F2F1,stroke:#009688,stroke-width:1px;
+    style ASG fill:#FFF8E1,stroke:#E65100,stroke-width:1.5px,stroke-dasharray: 5 5;
+    style TG fill:#FFFFFF,stroke:#E65100,stroke-width:2px;
+
+    %% Edge Style Rules
+    linkStyle 0,1,2,3 stroke:#7B1FA2,stroke-width:2px;
+    linkStyle 4,5,6,7 stroke:#3949AB,stroke-width:2px;
+    linkStyle 8,9 stroke:#7B1FA2,stroke-width:1.5px;
+    linkStyle 10 stroke:#7B1FA2,stroke-width:2px;
+    linkStyle 11,12,13,14 stroke:#546E7A,stroke-width:1.5px;
+    linkStyle 15,16 stroke:#D32F2F,stroke-width:2px;
+    linkStyle 17,18,19,20 stroke:#2E7D32,stroke-width:2px;

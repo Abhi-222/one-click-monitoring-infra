@@ -1,0 +1,1171 @@
+data.aws_availability_zones.available: Reading...
+module.iam.data.aws_iam_policy_document.ec2_assume_role: Reading...
+data.aws_ami.amazon_linux: Reading...
+module.iam.data.aws_iam_policy_document.ec2_assume_role: Read complete after 0s [id=2851119427]
+data.aws_availability_zones.available: Read complete after 1s [id=ap-south-1]
+data.aws_ami.amazon_linux: Read complete after 1s [id=ami-05726d1f069460e90]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_ssm_parameter.monitoring_env will be created
+  + resource "aws_ssm_parameter" "monitoring_env" {
+      + arn            = (known after apply)
+      + data_type      = (known after apply)
+      + has_value_wo   = (known after apply)
+      + id             = (known after apply)
+      + insecure_value = (known after apply)
+      + key_id         = (known after apply)
+      + name           = "/dev/monitoring/project"
+      + tags           = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all       = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tier           = (known after apply)
+      + type           = "String"
+      + value          = (sensitive value)
+      + value_wo       = (write-only attribute)
+      + version        = (known after apply)
+    }
+
+  # module.alb.aws_lb.this will be created
+  + resource "aws_lb" "this" {
+      + arn                                                          = (known after apply)
+      + arn_suffix                                                   = (known after apply)
+      + client_keep_alive                                            = 3600
+      + desync_mitigation_mode                                       = "defensive"
+      + dns_name                                                     = (known after apply)
+      + drop_invalid_header_fields                                   = false
+      + enable_deletion_protection                                   = false
+      + enable_http2                                                 = true
+      + enable_tls_version_and_cipher_suite_headers                  = false
+      + enable_waf_fail_open                                         = false
+      + enable_xff_client_port                                       = false
+      + enable_zonal_shift                                           = false
+      + enforce_security_group_inbound_rules_on_private_link_traffic = (known after apply)
+      + id                                                           = (known after apply)
+      + idle_timeout                                                 = 60
+      + internal                                                     = false
+      + ip_address_type                                              = (known after apply)
+      + load_balancer_type                                           = "application"
+      + name                                                         = "monitoring-dev-alb"
+      + name_prefix                                                  = (known after apply)
+      + preserve_host_header                                         = false
+      + security_groups                                              = (known after apply)
+      + subnets                                                      = (known after apply)
+      + tags                                                         = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-alb"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all                                                     = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-alb"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id                                                       = (known after apply)
+      + xff_header_processing_mode                                   = "append"
+      + zone_id                                                      = (known after apply)
+
+      + subnet_mapping (known after apply)
+    }
+
+  # module.alb.aws_lb_listener.http will be created
+  + resource "aws_lb_listener" "http" {
+      + arn                                                                   = (known after apply)
+      + id                                                                    = (known after apply)
+      + load_balancer_arn                                                     = (known after apply)
+      + port                                                                  = 80
+      + protocol                                                              = "HTTP"
+      + routing_http_request_x_amzn_mtls_clientcert_header_name               = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_issuer_header_name        = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_leaf_header_name          = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_serial_number_header_name = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_subject_header_name       = (known after apply)
+      + routing_http_request_x_amzn_mtls_clientcert_validity_header_name      = (known after apply)
+      + routing_http_request_x_amzn_tls_cipher_suite_header_name              = (known after apply)
+      + routing_http_request_x_amzn_tls_version_header_name                   = (known after apply)
+      + routing_http_response_access_control_allow_credentials_header_value   = (known after apply)
+      + routing_http_response_access_control_allow_headers_header_value       = (known after apply)
+      + routing_http_response_access_control_allow_methods_header_value       = (known after apply)
+      + routing_http_response_access_control_allow_origin_header_value        = (known after apply)
+      + routing_http_response_access_control_expose_headers_header_value      = (known after apply)
+      + routing_http_response_access_control_max_age_header_value             = (known after apply)
+      + routing_http_response_content_security_policy_header_value            = (known after apply)
+      + routing_http_response_server_enabled                                  = (known after apply)
+      + routing_http_response_strict_transport_security_header_value          = (known after apply)
+      + routing_http_response_x_content_type_options_header_value             = (known after apply)
+      + routing_http_response_x_frame_options_header_value                    = (known after apply)
+      + ssl_policy                                                            = (known after apply)
+      + tags_all                                                              = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tcp_idle_timeout_seconds                                              = (known after apply)
+
+      + default_action {
+          + order            = (known after apply)
+          + target_group_arn = (known after apply)
+          + type             = "forward"
+        }
+
+      + mutual_authentication (known after apply)
+    }
+
+  # module.alb.aws_lb_target_group.grafana will be created
+  + resource "aws_lb_target_group" "grafana" {
+      + arn                                = (known after apply)
+      + arn_suffix                         = (known after apply)
+      + connection_termination             = (known after apply)
+      + deregistration_delay               = "300"
+      + id                                 = (known after apply)
+      + ip_address_type                    = (known after apply)
+      + lambda_multi_value_headers_enabled = false
+      + load_balancer_arns                 = (known after apply)
+      + load_balancing_algorithm_type      = (known after apply)
+      + load_balancing_anomaly_mitigation  = (known after apply)
+      + load_balancing_cross_zone_enabled  = (known after apply)
+      + name                               = "monitoring-dev-alb-tg"
+      + name_prefix                        = (known after apply)
+      + port                               = 3000
+      + preserve_client_ip                 = (known after apply)
+      + protocol                           = "HTTP"
+      + protocol_version                   = (known after apply)
+      + proxy_protocol_v2                  = false
+      + slow_start                         = 0
+      + tags                               = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-alb-tg"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all                           = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-alb-tg"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + target_type                        = "instance"
+      + vpc_id                             = (known after apply)
+
+      + health_check {
+          + enabled             = true
+          + healthy_threshold   = 3
+          + interval            = 30
+          + matcher             = "200-399"
+          + path                = "/"
+          + port                = "3000"
+          + protocol            = "HTTP"
+          + timeout             = 5
+          + unhealthy_threshold = 3
+        }
+
+      + stickiness (known after apply)
+
+      + target_failover (known after apply)
+
+      + target_group_health (known after apply)
+
+      + target_health_state (known after apply)
+    }
+
+  # module.autoscaling.aws_autoscaling_group.this will be created
+  + resource "aws_autoscaling_group" "this" {
+      + arn                              = (known after apply)
+      + availability_zones               = (known after apply)
+      + default_cooldown                 = (known after apply)
+      + desired_capacity                 = 1
+      + force_delete                     = false
+      + force_delete_warm_pool           = false
+      + health_check_grace_period        = 300
+      + health_check_type                = "ELB"
+      + id                               = (known after apply)
+      + ignore_failed_scaling_activities = false
+      + load_balancers                   = (known after apply)
+      + max_size                         = 2
+      + metrics_granularity              = "1Minute"
+      + min_size                         = 1
+      + name                             = "monitoring-dev-asg"
+      + name_prefix                      = (known after apply)
+      + predicted_capacity               = (known after apply)
+      + protect_from_scale_in            = false
+      + service_linked_role_arn          = (known after apply)
+      + target_group_arns                = (known after apply)
+      + vpc_zone_identifier              = (known after apply)
+      + wait_for_capacity_timeout        = "10m"
+      + warm_pool_size                   = (known after apply)
+
+      + availability_zone_distribution (known after apply)
+
+      + capacity_reservation_specification (known after apply)
+
+      + launch_template {
+          + id      = (known after apply)
+          + name    = (known after apply)
+          + version = "$Latest"
+        }
+
+      + mixed_instances_policy (known after apply)
+
+      + tag {
+          + key                 = "Environment"
+          + propagate_at_launch = true
+          + value               = "dev"
+        }
+      + tag {
+          + key                 = "ManagedBy"
+          + propagate_at_launch = true
+          + value               = "Terraform"
+        }
+      + tag {
+          + key                 = "Name"
+          + propagate_at_launch = true
+          + value               = "monitoring-dev-asg"
+        }
+      + tag {
+          + key                 = "Owner"
+          + propagate_at_launch = true
+          + value               = "Anurag Maurya"
+        }
+      + tag {
+          + key                 = "Project"
+          + propagate_at_launch = true
+          + value               = "Monitoring Infrastructure"
+        }
+      + tag {
+          + key                 = "Role"
+          + propagate_at_launch = true
+          + value               = "monitoring"
+        }
+
+      + traffic_source (known after apply)
+    }
+
+  # module.bastion.aws_instance.bastion will be created
+  + resource "aws_instance" "bastion" {
+      + ami                                  = "ami-05726d1f069460e90"
+      + arn                                  = (known after apply)
+      + associate_public_ip_address          = true
+      + availability_zone                    = (known after apply)
+      + cpu_core_count                       = (known after apply)
+      + cpu_threads_per_core                 = (known after apply)
+      + disable_api_stop                     = (known after apply)
+      + disable_api_termination              = (known after apply)
+      + ebs_optimized                        = (known after apply)
+      + enable_primary_ipv6                  = (known after apply)
+      + get_password_data                    = false
+      + host_id                              = (known after apply)
+      + host_resource_group_arn              = (known after apply)
+      + iam_instance_profile                 = (known after apply)
+      + id                                   = (known after apply)
+      + instance_initiated_shutdown_behavior = (known after apply)
+      + instance_lifecycle                   = (known after apply)
+      + instance_state                       = (known after apply)
+      + instance_type                        = "t3.micro"
+      + ipv6_address_count                   = (known after apply)
+      + ipv6_addresses                       = (known after apply)
+      + key_name                             = "assignment-6"
+      + monitoring                           = (known after apply)
+      + outpost_arn                          = (known after apply)
+      + password_data                        = (known after apply)
+      + placement_group                      = (known after apply)
+      + placement_partition_number           = (known after apply)
+      + primary_network_interface_id         = (known after apply)
+      + private_dns                          = (known after apply)
+      + private_ip                           = (known after apply)
+      + public_dns                           = (known after apply)
+      + public_ip                            = (known after apply)
+      + secondary_private_ips                = (known after apply)
+      + security_groups                      = (known after apply)
+      + source_dest_check                    = true
+      + spot_instance_request_id             = (known after apply)
+      + subnet_id                            = (known after apply)
+      + tags                                 = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-bastion"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+          + "Role"        = "bastion"
+        }
+      + tags_all                             = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-bastion"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+          + "Role"        = "bastion"
+        }
+      + tenancy                              = (known after apply)
+      + user_data                            = (known after apply)
+      + user_data_base64                     = (known after apply)
+      + user_data_replace_on_change          = false
+      + vpc_security_group_ids               = (known after apply)
+
+      + capacity_reservation_specification (known after apply)
+
+      + cpu_options (known after apply)
+
+      + ebs_block_device (known after apply)
+
+      + enclave_options (known after apply)
+
+      + ephemeral_block_device (known after apply)
+
+      + instance_market_options (known after apply)
+
+      + maintenance_options (known after apply)
+
+      + metadata_options (known after apply)
+
+      + network_interface (known after apply)
+
+      + private_dns_name_options (known after apply)
+
+      + root_block_device (known after apply)
+    }
+
+  # module.cloudwatch.aws_cloudwatch_log_group.asg_health will be created
+  + resource "aws_cloudwatch_log_group" "asg_health" {
+      + arn               = (known after apply)
+      + id                = (known after apply)
+      + log_group_class   = (known after apply)
+      + name              = "/aws/autoscaling/monitoring-dev"
+      + name_prefix       = (known after apply)
+      + retention_in_days = 14
+      + skip_destroy      = false
+      + tags              = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all          = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+    }
+
+  # module.efs.aws_efs_file_system.this will be created
+  + resource "aws_efs_file_system" "this" {
+      + arn                     = (known after apply)
+      + availability_zone_id    = (known after apply)
+      + availability_zone_name  = (known after apply)
+      + creation_token          = "monitoring-dev-efs"
+      + dns_name                = (known after apply)
+      + encrypted               = true
+      + id                      = (known after apply)
+      + kms_key_id              = (known after apply)
+      + name                    = (known after apply)
+      + number_of_mount_targets = (known after apply)
+      + owner_id                = (known after apply)
+      + performance_mode        = (known after apply)
+      + size_in_bytes           = (known after apply)
+      + tags                    = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-efs"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all                = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-efs"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + throughput_mode         = "bursting"
+
+      + protection (known after apply)
+    }
+
+  # module.efs.aws_efs_mount_target.this["0"] will be created
+  + resource "aws_efs_mount_target" "this" {
+      + availability_zone_id   = (known after apply)
+      + availability_zone_name = (known after apply)
+      + dns_name               = (known after apply)
+      + file_system_arn        = (known after apply)
+      + file_system_id         = (known after apply)
+      + id                     = (known after apply)
+      + ip_address             = (known after apply)
+      + mount_target_dns_name  = (known after apply)
+      + network_interface_id   = (known after apply)
+      + owner_id               = (known after apply)
+      + security_groups        = (known after apply)
+      + subnet_id              = (known after apply)
+    }
+
+  # module.efs.aws_efs_mount_target.this["1"] will be created
+  + resource "aws_efs_mount_target" "this" {
+      + availability_zone_id   = (known after apply)
+      + availability_zone_name = (known after apply)
+      + dns_name               = (known after apply)
+      + file_system_arn        = (known after apply)
+      + file_system_id         = (known after apply)
+      + id                     = (known after apply)
+      + ip_address             = (known after apply)
+      + mount_target_dns_name  = (known after apply)
+      + network_interface_id   = (known after apply)
+      + owner_id               = (known after apply)
+      + security_groups        = (known after apply)
+      + subnet_id              = (known after apply)
+    }
+
+  # module.iam.aws_iam_instance_profile.ec2_monitoring_profile will be created
+  + resource "aws_iam_instance_profile" "ec2_monitoring_profile" {
+      + arn         = (known after apply)
+      + create_date = (known after apply)
+      + id          = (known after apply)
+      + name        = "monitoring-dev-ec2-monitoring-profile"
+      + name_prefix = (known after apply)
+      + path        = "/"
+      + role        = "monitoring-dev-ec2-monitoring-role"
+      + tags_all    = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + unique_id   = (known after apply)
+    }
+
+  # module.iam.aws_iam_role.ec2_monitoring will be created
+  + resource "aws_iam_role" "ec2_monitoring" {
+      + arn                   = (known after apply)
+      + assume_role_policy    = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action    = "sts:AssumeRole"
+                      + Effect    = "Allow"
+                      + Principal = {
+                          + Service = "ec2.amazonaws.com"
+                        }
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + create_date           = (known after apply)
+      + force_detach_policies = false
+      + id                    = (known after apply)
+      + managed_policy_arns   = (known after apply)
+      + max_session_duration  = 3600
+      + name                  = "monitoring-dev-ec2-monitoring-role"
+      + name_prefix           = (known after apply)
+      + path                  = "/"
+      + tags                  = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-ec2-monitoring-role"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all              = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-ec2-monitoring-role"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + unique_id             = (known after apply)
+
+      + inline_policy (known after apply)
+    }
+
+  # module.iam.aws_iam_role_policy.prometheus_discovery will be created
+  + resource "aws_iam_role_policy" "prometheus_discovery" {
+      + id          = (known after apply)
+      + name        = "monitoring-dev-prometheus-discovery-policy"
+      + name_prefix = (known after apply)
+      + policy      = jsonencode(
+            {
+              + Statement = [
+                  + {
+                      + Action   = [
+                          + "ec2:DescribeInstances",
+                          + "ec2:DescribeTags",
+                          + "ec2:DescribeAvailabilityZones",
+                        ]
+                      + Effect   = "Allow"
+                      + Resource = "*"
+                    },
+                ]
+              + Version   = "2012-10-17"
+            }
+        )
+      + role        = (known after apply)
+    }
+
+  # module.internet_gateway.aws_internet_gateway.this will be created
+  + resource "aws_internet_gateway" "this" {
+      + arn      = (known after apply)
+      + id       = (known after apply)
+      + owner_id = (known after apply)
+      + tags     = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-igw"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-igw"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id   = (known after apply)
+    }
+
+  # module.launch_template.aws_launch_template.this will be created
+  + resource "aws_launch_template" "this" {
+      + arn                    = (known after apply)
+      + default_version        = (known after apply)
+      + id                     = (known after apply)
+      + image_id               = "ami-05726d1f069460e90"
+      + instance_type          = "t3.micro"
+      + key_name               = "assignment-6"
+      + latest_version         = (known after apply)
+      + name                   = (known after apply)
+      + name_prefix            = "monitoring-dev-"
+      + tags                   = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-lt"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+          + "Role"        = "monitoring"
+        }
+      + tags_all               = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-lt"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+          + "Role"        = "monitoring"
+        }
+      + user_data              = "IyEvYmluL2Jhc2gNCnNldCAtZQ0KDQp5dW0gdXBkYXRlIC15DQphbWF6b24tbGludXgtZXh0cmFzIGluc3RhbGwgLXkgbmdpbngxDQpzeXN0ZW1jdGwgZW5hYmxlIG5naW54DQpzeXN0ZW1jdGwgc3RhcnQgbmdpbngNCg0KIyBGb3JtYXQgYW5kIG1vdW50IHRoZSBleHRyYSBFQlMgdm9sdW1lIGZvciBQcm9tZXRoZXVzIFRTREIgcGVyc2lzdGVuY2UuDQppZiBbIC1iIC9kZXYveHZkYiBdOyB0aGVuDQogIGlmICEgYmxraWQgL2Rldi94dmRiOyB0aGVuDQogICAgbWtmcyAtdCBleHQ0IC9kZXYveHZkYg0KICBmaQ0KICBta2RpciAtcCAvcHJvbWV0aGV1cy1kYXRhDQogIG1vdW50IC1vIGRlZmF1bHRzIC9kZXYveHZkYiAvcHJvbWV0aGV1cy1kYXRhDQogIGVjaG8gJy9kZXYveHZkYiAvcHJvbWV0aGV1cy1kYXRhIGV4dDQgZGVmYXVsdHMsbm9mYWlsIDAgMicgPj4gL2V0Yy9mc3RhYg0KZmkNCg0KIyBQbGFjZWhvbGRlciBmb3IgR3JhZmFuYSwgUHJvbWV0aGV1cywgQWxlcnRtYW5hZ2VyLCBhbmQgTm9kZSBFeHBvcnRlciBpbnN0YWxsYXRpb24NCiMgSW4gYSBmdWxsIGFzc2lnbm1lbnQgaW1wbGVtZW50YXRpb24sIGluc3RhbGwgRG9ja2VyL0Fuc2libGUgb3IgY3VzdG9tIHN5c3RlbWQgdW5pdHMgaGVyZS4NCg0KZWNobyAiR3JhZmFuYSBwb3J0IDMwMDAiID4gL3RtcC9tb25pdG9yaW5nX3NldHVwLmxvZw0KZWNobyAiTm9kZSBleHBvcnRlciBwb3J0IDkxMDAiID4+IC90bXAvbW9uaXRvcmluZ19zZXR1cC5sb2cNCg=="
+      + vpc_security_group_ids = (known after apply)
+
+      + block_device_mappings {
+          + device_name = "/dev/xvdba"
+
+          + ebs {
+              + delete_on_termination      = "true"
+              + encrypted                  = "true"
+              + iops                       = (known after apply)
+              + throughput                 = (known after apply)
+              + volume_initialization_rate = (known after apply)
+              + volume_size                = 20
+              + volume_type                = "gp3"
+            }
+        }
+      + block_device_mappings {
+          + device_name = "/dev/xvdb"
+
+          + ebs {
+              + delete_on_termination      = "false"
+              + encrypted                  = "true"
+              + iops                       = (known after apply)
+              + throughput                 = (known after apply)
+              + volume_initialization_rate = (known after apply)
+              + volume_size                = 50
+              + volume_type                = "gp3"
+            }
+        }
+
+      + iam_instance_profile {
+          + name = "monitoring-dev-ec2-monitoring-profile"
+        }
+
+      + metadata_options {
+          + http_endpoint               = "enabled"
+          + http_protocol_ipv6          = (known after apply)
+          + http_put_response_hop_limit = (known after apply)
+          + http_tokens                 = "required"
+          + instance_metadata_tags      = (known after apply)
+        }
+
+      + tag_specifications {
+          + resource_type = "instance"
+          + tags          = {
+              + "Environment" = "dev"
+              + "ManagedBy"   = "Terraform"
+              + "Name"        = "monitoring-dev-lt"
+              + "Owner"       = "Anurag Maurya"
+              + "Project"     = "Monitoring Infrastructure"
+              + "Role"        = "monitoring"
+            }
+        }
+    }
+
+  # module.nat_gateway.aws_eip.nat will be created
+  + resource "aws_eip" "nat" {
+      + allocation_id        = (known after apply)
+      + arn                  = (known after apply)
+      + association_id       = (known after apply)
+      + carrier_ip           = (known after apply)
+      + customer_owned_ip    = (known after apply)
+      + domain               = "vpc"
+      + id                   = (known after apply)
+      + instance             = (known after apply)
+      + ipam_pool_id         = (known after apply)
+      + network_border_group = (known after apply)
+      + network_interface    = (known after apply)
+      + private_dns          = (known after apply)
+      + private_ip           = (known after apply)
+      + ptr_record           = (known after apply)
+      + public_dns           = (known after apply)
+      + public_ip            = (known after apply)
+      + public_ipv4_pool     = (known after apply)
+      + tags                 = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-nat"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all             = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-nat"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc                  = (known after apply)
+    }
+
+  # module.nat_gateway.aws_nat_gateway.this will be created
+  + resource "aws_nat_gateway" "this" {
+      + allocation_id                      = (known after apply)
+      + association_id                     = (known after apply)
+      + connectivity_type                  = "public"
+      + id                                 = (known after apply)
+      + network_interface_id               = (known after apply)
+      + private_ip                         = (known after apply)
+      + public_ip                          = (known after apply)
+      + secondary_private_ip_address_count = (known after apply)
+      + secondary_private_ip_addresses     = (known after apply)
+      + subnet_id                          = (known after apply)
+      + tags                               = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-nat"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all                           = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-nat"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+    }
+
+  # module.private_route_table.aws_route_table.this will be created
+  + resource "aws_route_table" "this" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = [
+          + {
+              + cidr_block                 = "0.0.0.0/0"
+              + nat_gateway_id             = (known after apply)
+                # (11 unchanged attributes hidden)
+            },
+        ]
+      + tags             = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-private-rt"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all         = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-private-rt"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # module.private_route_table.aws_route_table_association.this["0"] will be created
+  + resource "aws_route_table_association" "this" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.private_route_table.aws_route_table_association.this["1"] will be created
+  + resource "aws_route_table_association" "this" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.private_tool_subnets["private_1"].aws_subnet.this will be created
+  + resource "aws_subnet" "this" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "ap-south-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.3.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-private-1"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all                                       = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-private-1"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.private_tool_subnets["private_2"].aws_subnet.this will be created
+  + resource "aws_subnet" "this" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "ap-south-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.4.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = false
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-private-2"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all                                       = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-private-2"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.public_route_table.aws_route_table.this will be created
+  + resource "aws_route_table" "this" {
+      + arn              = (known after apply)
+      + id               = (known after apply)
+      + owner_id         = (known after apply)
+      + propagating_vgws = (known after apply)
+      + route            = [
+          + {
+              + cidr_block                 = "0.0.0.0/0"
+              + gateway_id                 = (known after apply)
+                # (11 unchanged attributes hidden)
+            },
+        ]
+      + tags             = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-public-rt"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all         = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-public-rt"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id           = (known after apply)
+    }
+
+  # module.public_route_table.aws_route_table_association.this["0"] will be created
+  + resource "aws_route_table_association" "this" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.public_route_table.aws_route_table_association.this["1"] will be created
+  + resource "aws_route_table_association" "this" {
+      + id             = (known after apply)
+      + route_table_id = (known after apply)
+      + subnet_id      = (known after apply)
+    }
+
+  # module.public_subnets["public_1"].aws_subnet.this will be created
+  + resource "aws_subnet" "this" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "ap-south-1a"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.1.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-public-1"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all                                       = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-public-1"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.public_subnets["public_2"].aws_subnet.this will be created
+  + resource "aws_subnet" "this" {
+      + arn                                            = (known after apply)
+      + assign_ipv6_address_on_creation                = false
+      + availability_zone                              = "ap-south-1b"
+      + availability_zone_id                           = (known after apply)
+      + cidr_block                                     = "10.0.2.0/24"
+      + enable_dns64                                   = false
+      + enable_resource_name_dns_a_record_on_launch    = false
+      + enable_resource_name_dns_aaaa_record_on_launch = false
+      + id                                             = (known after apply)
+      + ipv6_cidr_block_association_id                 = (known after apply)
+      + ipv6_native                                    = false
+      + map_public_ip_on_launch                        = true
+      + owner_id                                       = (known after apply)
+      + private_dns_hostname_type_on_launch            = (known after apply)
+      + tags                                           = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-public-2"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all                                       = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-public-2"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id                                         = (known after apply)
+    }
+
+  # module.security_group.aws_security_group.alb will be created
+  + resource "aws_security_group" "alb" {
+      + arn                    = (known after apply)
+      + description            = "ALB security group"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 80
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 80
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + name                   = "monitoring-dev-alb-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-alb-sg"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all               = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-alb-sg"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.security_group.aws_security_group.bastion will be created
+  + resource "aws_security_group" "bastion" {
+      + arn                    = (known after apply)
+      + description            = "Bastion host security group"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 22
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 22
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + name                   = "monitoring-dev-bastion-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-bastion-sg"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all               = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-bastion-sg"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.security_group.aws_security_group.monitoring will be created
+  + resource "aws_security_group" "monitoring" {
+      + arn                    = (known after apply)
+      + description            = "Monitoring service security group"
+      + egress                 = [
+          + {
+              + cidr_blocks      = [
+                  + "0.0.0.0/0",
+                ]
+              + from_port        = 0
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "-1"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 0
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + id                     = (known after apply)
+      + ingress                = [
+          + {
+              + cidr_blocks      = [
+                  + "10.0.0.0/16",
+                ]
+              + from_port        = 2049
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 2049
+                # (1 unchanged attribute hidden)
+            },
+          + {
+              + cidr_blocks      = [
+                  + "10.0.0.0/16",
+                ]
+              + from_port        = 9090
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 9090
+                # (1 unchanged attribute hidden)
+            },
+          + {
+              + cidr_blocks      = [
+                  + "10.0.0.0/16",
+                ]
+              + from_port        = 9100
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = []
+              + self             = false
+              + to_port          = 9100
+                # (1 unchanged attribute hidden)
+            },
+          + {
+              + cidr_blocks      = []
+              + from_port        = 22
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = (known after apply)
+              + self             = false
+              + to_port          = 22
+                # (1 unchanged attribute hidden)
+            },
+          + {
+              + cidr_blocks      = []
+              + from_port        = 3000
+              + ipv6_cidr_blocks = []
+              + prefix_list_ids  = []
+              + protocol         = "tcp"
+              + security_groups  = (known after apply)
+              + self             = false
+              + to_port          = 3000
+                # (1 unchanged attribute hidden)
+            },
+        ]
+      + name                   = "monitoring-dev-monitoring-sg"
+      + name_prefix            = (known after apply)
+      + owner_id               = (known after apply)
+      + revoke_rules_on_delete = false
+      + tags                   = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-monitoring-sg"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all               = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-monitoring-sg"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + vpc_id                 = (known after apply)
+    }
+
+  # module.vpc.aws_vpc.main will be created
+  + resource "aws_vpc" "main" {
+      + arn                                  = (known after apply)
+      + cidr_block                           = "10.0.0.0/16"
+      + default_network_acl_id               = (known after apply)
+      + default_route_table_id               = (known after apply)
+      + default_security_group_id            = (known after apply)
+      + dhcp_options_id                      = (known after apply)
+      + enable_dns_hostnames                 = true
+      + enable_dns_support                   = true
+      + enable_network_address_usage_metrics = (known after apply)
+      + id                                   = (known after apply)
+      + instance_tenancy                     = "default"
+      + ipv6_association_id                  = (known after apply)
+      + ipv6_cidr_block                      = (known after apply)
+      + ipv6_cidr_block_network_border_group = (known after apply)
+      + main_route_table_id                  = (known after apply)
+      + owner_id                             = (known after apply)
+      + tags                                 = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-vpc"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+      + tags_all                             = {
+          + "Environment" = "dev"
+          + "ManagedBy"   = "Terraform"
+          + "Name"        = "monitoring-dev-vpc"
+          + "Owner"       = "Anurag Maurya"
+          + "Project"     = "Monitoring Infrastructure"
+        }
+    }
+
+Plan: 31 to add, 0 to change, 0 to destroy.
+
+Changes to Outputs:
+  + alb_dns_name      = (known after apply)
+  + bastion_public_ip = (known after apply)
+  + efs_dns_name      = (known after apply)
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
+Releasing state lock. This may take a few moments...

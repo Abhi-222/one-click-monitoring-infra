@@ -1,0 +1,112 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="980" viewBox="0 0 1600 980" role="img" aria-labelledby="title desc">
+  <title id="title">Monitoring Stack AWS Architecture</title>
+  <desc id="desc">Architecture diagram for Terraform and Ansible managed monitoring stack on AWS.</desc>
+  <defs>
+    <style>
+      .title { font: 700 28px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .label { font: 600 18px 'Segoe UI', Arial, sans-serif; fill: #0f172a; }
+      .small { font: 500 14px 'Segoe UI', Arial, sans-serif; fill: #334155; }
+      .node { fill: #eef7ff; stroke: #1d4ed8; stroke-width: 2; rx: 16; ry: 16; }
+      .node-alt { fill: #f0fdf4; stroke: #16a34a; stroke-width: 2; rx: 16; ry: 16; }
+      .node-warn { fill: #fff7ed; stroke: #ea580c; stroke-width: 2; rx: 16; ry: 16; }
+      .node-dark { fill: #f8fafc; stroke: #64748b; stroke-width: 2; rx: 16; ry: 16; }
+      .arrow { stroke: #475569; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .dashed { stroke-dasharray: 8 8; }
+      .pill { fill: #e2e8f0; stroke: #94a3b8; stroke-width: 1.5; rx: 999; ry: 999; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M0,0 L12,6 L0,12 z" fill="#475569"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="980" fill="#f8fafc"/>
+  <text x="80" y="56" class="title">AWS Monitoring Stack Architecture</text>
+
+  <!-- Top / external -->
+  <rect x="120" y="110" width="160" height="80" class="node-warn"/>
+  <text x="200" y="145" text-anchor="middle" class="label">Users</text>
+  <text x="200" y="170" text-anchor="middle" class="small">Browser / Admin</text>
+
+  <rect x="360" y="110" width="180" height="80" class="node"/>
+  <text x="450" y="145" text-anchor="middle" class="label">Amazon ALB</text>
+  <text x="450" y="170" text-anchor="middle" class="small">Public HTTPS entry</text>
+
+  <rect x="620" y="110" width="240" height="80" class="node"/>
+  <text x="740" y="145" text-anchor="middle" class="label">Grafana Auto Scaling Group</text>
+  <text x="740" y="170" text-anchor="middle" class="small">Private subnets</text>
+
+  <rect x="950" y="110" width="150" height="80" class="node-alt"/>
+  <text x="1025" y="145" text-anchor="middle" class="label">Amazon EFS</text>
+  <text x="1025" y="170" text-anchor="middle" class="small">Shared storage</text>
+
+  <rect x="1180" y="110" width="180" height="80" class="node-dark"/>
+  <text x="1270" y="145" text-anchor="middle" class="label">Amazon S3</text>
+  <text x="1270" y="170" text-anchor="middle" class="small">Terraform state</text>
+
+  <!-- Middle -->
+  <rect x="500" y="270" width="220" height="90" class="node"/>
+  <text x="610" y="310" text-anchor="middle" class="label">Bastion Host</text>
+  <text x="610" y="336" text-anchor="middle" class="small">Public subnet / SSH jump</text>
+
+  <rect x="820" y="270" width="240" height="90" class="node"/>
+  <text x="940" y="310" text-anchor="middle" class="label">Prometheus Primary</text>
+  <text x="940" y="336" text-anchor="middle" class="small">Private subnet</text>
+
+  <rect x="1110" y="270" width="240" height="90" class="node"/>
+  <text x="1230" y="310" text-anchor="middle" class="label">Prometheus Replica</text>
+  <text x="1230" y="336" text-anchor="middle" class="small">Private subnet</text>
+
+  <!-- Lower -->
+  <rect x="820" y="430" width="220" height="90" class="node"/>
+  <text x="930" y="470" text-anchor="middle" class="label">Node Exporter</text>
+  <text x="930" y="496" text-anchor="middle" class="small">On monitoring hosts</text>
+
+  <rect x="1110" y="430" width="240" height="90" class="node-dark"/>
+  <text x="1230" y="470" text-anchor="middle" class="label">DynamoDB Lock Table</text>
+  <text x="1230" y="496" text-anchor="middle" class="small">State locking</text>
+
+  <!-- Ansible / automation -->
+  <rect x="120" y="610" width="260" height="90" class="node-alt"/>
+  <text x="250" y="650" text-anchor="middle" class="label">Ansible Control Machine</text>
+  <text x="250" y="676" text-anchor="middle" class="small">Runs playbooks</text>
+
+  <rect x="430" y="610" width="260" height="90" class="node"/>
+  <text x="560" y="650" text-anchor="middle" class="label">Terraform Workflow</text>
+  <text x="560" y="676" text-anchor="middle" class="small">Init / Plan / Apply</text>
+
+  <!-- Footer -->
+  <rect x="80" y="820" width="1440" height="90" class="pill"/>
+  <text x="100" y="860" class="small">Legend:</text>
+  <text x="210" y="860" class="small">Public access</text>
+  <text x="340" y="860" class="small">Private network</text>
+  <text x="500" y="860" class="small">Storage / state</text>
+  <text x="670" y="860" class="small">Automation</text>
+
+  <!-- Arrows -->
+  <path d="M200 190 L200 230 L450 230 L450 190" class="arrow"/>
+  <path d="M450 190 L450 230" class="arrow"/>
+  <path d="M450 190 L450 230" class="arrow"/>
+  <path d="M450 190 L450 230" class="arrow"/>
+
+  <line x1="280" y1="150" x2="360" y2="150" class="arrow"/>
+  <line x1="540" y1="150" x2="620" y2="150" class="arrow"/>
+  <line x1="860" y1="150" x2="950" y2="150" class="arrow"/>
+  <line x1="1100" y1="150" x2="1180" y2="150" class="arrow"/>
+
+  <line x1="740" y1="190" x2="740" y2="240" class="arrow dashed"/>
+  <line x1="610" y1="360" x2="610" y2="430" class="arrow dashed"/>
+  <line x1="940" y1="360" x2="940" y2="430" class="arrow dashed"/>
+  <line x1="1230" y1="360" x2="1230" y2="430" class="arrow dashed"/>
+
+  <line x1="250" y1="700" x2="250" y2="760" class="arrow"/>
+  <line x1="560" y1="700" x2="560" y2="760" class="arrow"/>
+  <line x1="250" y1="760" x2="560" y2="760" class="arrow"/>
+  <line x1="560" y1="760" x2="610" y2="360" class="arrow dashed"/>
+  <line x1="560" y1="760" x2="940" y2="360" class="arrow dashed"/>
+  <line x1="560" y1="760" x2="1230" y2="360" class="arrow dashed"/>
+
+  <line x1="450" y1="150" x2="450" y2="270" class="arrow dashed"/>
+  <line x1="740" y1="190" x2="740" y2="270" class="arrow dashed"/>
+  <line x1="1025" y1="190" x2="1025" y2="430" class="arrow dashed"/>
+  <line x1="1270" y1="190" x2="1270" y2="270" class="arrow dashed"/>
+</svg>

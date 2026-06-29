@@ -1,0 +1,14 @@
+[bastion]
+bastion ansible_host=${bastion_public_ip} ansible_user=${ansible_user}
+
+[monitoring]
+%{ for idx, ip in monitoring_private_ip_list ~}
+monitoring-${idx} ansible_host=${ip} ansible_user=${ansible_user}
+%{ endfor ~}
+
+[monitoring:vars]
+ansible_user=${ansible_user}
+ansible_ssh_common_args=-o ProxyCommand="ssh -W %h:%p -q ${ansible_user}@${bastion_public_ip}"
+monitoring_private_dns=${join(",", monitoring_private_dns_list)}
+alb_dns_name=${alb_dns_name}
+efs_dns_name=${efs_dns_name}

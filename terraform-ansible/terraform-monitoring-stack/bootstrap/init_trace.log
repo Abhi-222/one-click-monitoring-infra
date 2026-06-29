@@ -1,0 +1,48 @@
+2026-06-26T13:12:25.584Z [INFO]  Terraform version: 1.15.6
+2026-06-26T13:12:25.585Z [DEBUG] using github.com/hashicorp/go-tfe v1.105.0
+2026-06-26T13:12:25.586Z [DEBUG] using github.com/hashicorp/hcl/v2 v2.24.0
+2026-06-26T13:12:25.587Z [DEBUG] using github.com/hashicorp/terraform-svchost v0.2.1
+2026-06-26T13:12:25.588Z [DEBUG] using github.com/zclconf/go-cty v1.18.0
+2026-06-26T13:12:25.589Z [INFO]  Go runtime version: go1.25.10
+2026-06-26T13:12:25.590Z [INFO]  CLI args: []string{"terraform", "init", "-plugin-dir=.terraform/providers"}
+2026-06-26T13:12:25.590Z [TRACE] Stdout is not a terminal
+2026-06-26T13:12:25.591Z [TRACE] Stderr is not a terminal
+2026-06-26T13:12:25.592Z [TRACE] Stdin is not a terminal
+2026-06-26T13:12:25.593Z [DEBUG] Attempting to open CLI config file: /home/anurag/.terraformrc
+2026-06-26T13:12:25.604Z [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
+2026-06-26T13:12:25.605Z [DEBUG] ignoring non-existing provider search directory terraform.d/plugins
+2026-06-26T13:12:25.606Z [DEBUG] ignoring non-existing provider search directory /home/anurag/.terraform.d/plugins
+2026-06-26T13:12:25.607Z [DEBUG] ignoring non-existing provider search directory /home/anurag/.local/share/terraform/plugins
+2026-06-26T13:12:25.609Z [DEBUG] ignoring non-existing provider search directory /usr/local/share/terraform/plugins
+2026-06-26T13:12:25.609Z [DEBUG] ignoring non-existing provider search directory /usr/share/terraform/plugins
+2026-06-26T13:12:25.612Z [INFO]  CLI command args: []string{"init", "-plugin-dir=.terraform/providers"}
+2026-06-26T13:12:25.784Z [TRACE] terraform.NewContext: starting
+2026-06-26T13:12:25.785Z [TRACE] terraform.NewContext: complete
+2026-06-26T13:12:25.786Z [TRACE] building graph for terraform dependencies
+2026-06-26T13:12:25.786Z [TRACE] Executing graph transform *terraform.RootVariableTransformer
+2026-06-26T13:12:25.787Z [TRACE] Executing graph transform *terraform.ModuleTransformer
+2026-06-26T13:12:25.787Z [TRACE] Executing graph transform *terraform.LocalTransformer
+2026-06-26T13:12:25.788Z [TRACE] Executing graph transform *terraform.ReferenceTransformer
+2026-06-26T13:12:25.789Z [DEBUG] ReferenceTransformer: "var.backend_bucket_name" references: []
+2026-06-26T13:12:25.789Z [DEBUG] ReferenceTransformer: "var.backend_lock_table_name" references: []
+2026-06-26T13:12:25.790Z [DEBUG] ReferenceTransformer: "local.backend_bucket_id (expand)" references: []
+2026-06-26T13:12:25.791Z [TRACE] Executing graph transform *terraform.TransformFilter
+2026-06-26T13:12:25.791Z [TRACE] Executing graph transform *terraform.variableValidationTransformer
+2026-06-26T13:12:25.792Z [TRACE] variableValidationTransformer: adding validation nodes for any existing variable evaluation nodes
+2026-06-26T13:12:25.793Z [TRACE] Executing graph transform *terraform.RootTransformer
+2026-06-26T13:12:25.793Z [TRACE] Executing graph transform *terraform.TransitiveReductionTransformer
+2026-06-26T13:12:25.794Z [TRACE] Completed graph transform:
+root - terraform.graphNodeRoot
+  ------
+2026-06-26T13:12:25.794Z [DEBUG] Starting graph walk: walkInit
+2026-06-26T13:12:25.795Z [TRACE] vertex "root": starting visit (terraform.graphNodeRoot)
+2026-06-26T13:12:25.796Z [TRACE] vertex "root": does not belong to any module instance
+2026-06-26T13:12:25.797Z [TRACE] vertex "root": visit complete
+2026-06-26T13:12:25.803Z [DEBUG] init: overriding provider plugin search paths
+2026-06-26T13:12:25.803Z [DEBUG] will search for provider plugins in [.terraform/providers]
+[0m[1mInitializing provider plugins found in the configuration...[0m
+- Reusing previous version of hashicorp/aws from the dependency lock file
+2026-06-26T13:12:25.904Z [TRACE] getproviders.SearchLocalDirectory: found registry.terraform.io/hashicorp/aws v5.100.0 for linux_amd64 at .terraform/providers/registry.terraform.io/hashicorp/aws/5.100.0/linux_amd64
+2026-06-26T13:12:25.934Z [TRACE] providercache.fillMetaCache: scanning directory .terraform/providers
+2026-06-26T13:12:26.018Z [TRACE] getproviders.SearchLocalDirectory: found registry.terraform.io/hashicorp/aws v5.100.0 for linux_amd64 at .terraform/providers/registry.terraform.io/hashicorp/aws/5.100.0/linux_amd64
+2026-06-26T13:12:26.055Z [TRACE] providercache.fillMetaCache: including .terraform/providers/registry.terraform.io/hashicorp/aws/5.100.0/linux_amd64 as a candidate package for registry.terraform.io/hashicorp/aws 5.100.0
