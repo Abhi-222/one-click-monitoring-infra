@@ -1,2 +1,2 @@
 ---
-ansible_host: 13.207.41.221
+ansible_host: "{{ bastion_ip | default(public_ip_address) }}"
