@@ -66,6 +66,36 @@
   notify:
     - Restart Grafana
 
+- name: Provision Prometheus data source
+  ansible.builtin.template:
+    src: prometheus_datasource.yml.j2
+    dest: /etc/grafana/provisioning/datasources/prometheus.yml
+    owner: root
+    group: grafana
+    mode: "0640"
+  notify:
+    - Restart Grafana
+
+- name: Provision Server Health dashboard provider
+  ansible.builtin.template:
+    src: server_health_dashboard_provider.yml.j2
+    dest: /etc/grafana/provisioning/dashboards/server_health.yaml
+    owner: root
+    group: grafana
+    mode: "0640"
+  notify:
+    - Restart Grafana
+
+- name: Provision Server Health dashboard JSON
+  ansible.builtin.template:
+    src: server_health_dashboard.json.j2
+    dest: /etc/grafana/provisioning/dashboards/server_health_dashboard.json
+    owner: root
+    group: grafana
+    mode: "0640"
+  notify:
+    - Restart Grafana
+
 - name: Ensure Grafana systemd service unit exists
   ansible.builtin.template:
     src: grafana.service.j2
