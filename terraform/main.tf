@@ -173,7 +173,12 @@ module "autoscaling" {
   name               = "${local.env_prefix}-asg"
   environment        = var.environment
   tags               = merge(local.common_tags, { Name = "${local.env_prefix}-asg" })
+
+  depends_on = [
+    module.private_route_table
+  ]
 }
+
 
 module "cloudwatch" {
   source = "./modules/cloudwatch"

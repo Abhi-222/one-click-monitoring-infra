@@ -28,8 +28,8 @@ pipeline {
             steps {
                 script {
                     runAnsible(
-                        bastionIp: params.BASTION_IP,
-                        efsId: params.EFS_ID,
+                        bastionIp: params.BASTION_IP?.trim(),
+                        efsId: params.EFS_ID?.trim(),
                         environment: params.ENVIRONMENT,
                         directory: env.ANSIBLE_DIR,
                         credentialsId: 'aws-ssh-key-id'
