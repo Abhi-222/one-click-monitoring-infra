@@ -97,7 +97,7 @@ variable "prometheus_volume_size_gb" {
 variable "asg_desired_capacity" {
   description = "Desired Grafana ASG capacity."
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "asg_max_size" {
@@ -109,7 +109,7 @@ variable "asg_max_size" {
 variable "asg_min_size" {
   description = "Minimum Grafana ASG capacity."
   type        = number
-  default     = 1
+  default     = 2
 }
 
 variable "tags" {
