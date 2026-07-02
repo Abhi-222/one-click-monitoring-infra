@@ -24,15 +24,46 @@ pipeline {
             }
         }
 
-        stage('Configure Monitoring Services') {
+        stage('Install Dependencies') {
             steps {
-                runAnsible(
-                    bastionIp: params.BASTION_IP?.trim(),
-                    efsId: params.EFS_ID?.trim(),
-                    environment: params.ENVIRONMENT,
-                    directory: env.ANSIBLE_DIR,
-                    credentialsId: 'aws-ssh-key-id'
-                )
+                dir(env.ANSIBLE_DIR) {
+                    echo "Installing Python and Ansible core requirements..."
+                    sh 'pip install --user boto3 botocore ansible-core==2.16.8 --break-system-packages'
+                }
+            }
+        }
+
+        stage('Install Collections') {
+            steps {
+                dir(env.ANSIBLE_DIR) {
+                    echo "Installing AWS, POSIX and General collections..."
+                    sh 'ansible-galaxy collection install amazon.aws ansible.posix community.general'
+                }
+            }
+        }
+
+        stage('Syntax Validation') {
+            steps {
+                dir(env.ANSIBLE_DIR) {
+                    echo "Checking playbook syntax..."
+                    sh 'ansible-playbook --syntax-check site.yml'
+                }
+            }
+        }
+
+        stage('Deploy Observability Stack') {
+            steps {
+                dir(env.ANSIBLE_DIR) {
+                    echo "Deploying HA monitoring configuration..."
+                    withCredentials([file(credentialsId: 'aws-ssh-key-id', variable: 'SSH_KEY_FILE')]) {
+                        sh """
+                        ansible-playbook -i inventory/aws_ec2.yml site.yml \
+                            -e 'bastion_ip=${params.BASTION_IP?.trim()}' \
+                            -e 'grafana_efs_file_system_id=${params.EFS_ID?.trim()}' \
+                            -e 'ansible_ssh_private_key_file=${SSH_KEY_FILE}'
+                        """
+                    }
+                }
             }
         }
     }
