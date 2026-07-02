@@ -3,6 +3,13 @@
 pipeline {
     agent any
 
+    options {
+        timeout(time: 2, unit: 'HOURS')
+        timestamps()
+        ansiColor('xterm')
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+    }
+
     parameters {
         string(name: 'BASTION_IP', defaultValue: '', description: 'Public IP of the bastion host')
         string(name: 'EFS_ID', defaultValue: '', description: 'EFS File System ID')
@@ -11,16 +18,59 @@ pipeline {
     }
 
     environment {
-        AWS_ACCESS_KEY_ID     = credentials('aws-credentials-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-credentials-id')
-        AWS_DEFAULT_REGION    = 'ap-south-1'
-        ANSIBLE_DIR           = 'ansible'
+        AWS_DEFAULT_REGION = 'ap-south-1'
+        ANSIBLE_DIR        = 'ansible'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkoutSCM()
+            }
+        }
+
+        stage('Diagnostics & Tool Versioning') {
+            steps {
+                echo "=== Diagnostics & Tool Version Info ==="
+                sh 'ansible --version'
+                sh 'python3 --version'
+                dir(env.ANSIBLE_DIR) {
+                    sh 'ansible-galaxy collection list'
+                }
+            }
+        }
+
+        stage('Validate Parameters') {
+            steps {
+                script {
+                    echo "Validating input parameters..."
+                    if (!params.BASTION_IP || params.BASTION_IP.trim() == "") {
+                        error "Validation Failed: BASTION_IP parameter is required."
+                    }
+                    if (!params.EFS_ID || params.EFS_ID.trim() == "") {
+                        error "Validation Failed: EFS_ID parameter is required."
+                    }
+                    
+                    // Validate IP address format
+                    def ipPattern = ~/^([0-9]{1,3}\.){3}[0-9]{1,3}$/
+                    if (!(params.BASTION_IP.trim() =~ ipPattern)) {
+                        error "Validation Failed: BASTION_IP '${params.BASTION_IP}' is not a valid IPv4 address."
+                    }
+
+                    // Validate EFS ID format (fs-xxxxxxx or fs-xxxxxxxxxxxxxxxxx)
+                    def efsPattern = ~/^fs-[0-9a-fA-F]+$/
+                    if (!(params.EFS_ID.trim() =~ efsPattern)) {
+                        error "Validation Failed: EFS_ID '${params.EFS_ID}' is not a valid EFS File System ID format (e.g. fs-04b01c21bb1822374)."
+                    }
+
+                    if (params.NOTIFICATION_EMAIL && params.NOTIFICATION_EMAIL.trim() != "") {
+                        def emailPattern = ~/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})$/
+                        if (!(params.NOTIFICATION_EMAIL.trim() =~ emailPattern)) {
+                            error "Validation Failed: NOTIFICATION_EMAIL '${params.NOTIFICATION_EMAIL}' is not a valid format."
+                        }
+                    }
+                    echo "All parameters successfully validated."
+                }
             }
         }
 
@@ -36,8 +86,8 @@ pipeline {
         stage('Install Collections') {
             steps {
                 dir(env.ANSIBLE_DIR) {
-                    echo "Installing AWS, POSIX and General collections..."
-                    sh 'ansible-galaxy collection install amazon.aws ansible.posix community.general'
+                    echo "Installing required Ansible Galaxy collections via requirements.yml..."
+                    sh 'ansible-galaxy collection install -r requirements.yml'
                 }
             }
         }
@@ -45,7 +95,7 @@ pipeline {
         stage('Syntax Validation') {
             steps {
                 dir(env.ANSIBLE_DIR) {
-                    echo "Checking playbook syntax..."
+                    echo "Verifying playbook syntax..."
                     sh 'ansible-playbook --syntax-check site.yml'
                 }
             }
@@ -54,14 +104,23 @@ pipeline {
         stage('Deploy Observability Stack') {
             steps {
                 dir(env.ANSIBLE_DIR) {
-                    echo "Deploying HA monitoring configuration..."
-                    withCredentials([file(credentialsId: 'aws-ssh-key-id', variable: 'SSH_KEY_FILE')]) {
-                        sh """
-                        ansible-playbook -i inventory/aws_ec2.yml site.yml \
-                            -e 'bastion_ip=${params.BASTION_IP?.trim()}' \
-                            -e 'grafana_efs_file_system_id=${params.EFS_ID?.trim()}' \
-                            -e 'ansible_ssh_private_key_file=${SSH_KEY_FILE}'
-                        """
+                    echo "Deploying monitoring configuration stack..."
+                    withEnv([
+                        "BASTION_IP=${params.BASTION_IP.trim()}",
+                        "EFS_ID=${params.EFS_ID.trim()}"
+                    ]) {
+                        withCredentials([
+                            file(credentialsId: 'aws-ssh-key-id', variable: 'SSH_KEY_FILE'),
+                            string(credentialsId: 'aws-credentials-id', variable: 'AWS_ACCESS_KEY_ID'),
+                            string(credentialsId: 'aws-secret-credentials-id', variable: 'AWS_SECRET_ACCESS_KEY')
+                        ]) {
+                            sh '''
+                            ansible-playbook -i inventory/aws_ec2.yml site.yml \
+                                -e "bastion_ip=${BASTION_IP}" \
+                                -e "grafana_efs_file_system_id=${EFS_ID}" \
+                                -e "ansible_ssh_private_key_file=${SSH_KEY_FILE}"
+                            '''
+                        }
                     }
                 }
             }

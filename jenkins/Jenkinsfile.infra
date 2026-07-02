@@ -3,23 +3,52 @@
 pipeline {
     agent any
 
+    options {
+        timeout(time: 2, unit: 'HOURS')
+        timestamps()
+        ansiColor('xterm')
+        buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
+    }
+
     parameters {
         choice(name: 'ACTION', choices: ['apply', 'destroy'], description: 'Terraform action to perform')
         choice(name: 'ENVIRONMENT', choices: ['dev'], description: 'Target environment')
-        string(name: 'NOTIFICATION_EMAIL', defaultValue: 'admin@example.com', description: 'Email address for status notifications (leave blank to disable)')
+        string(name: 'NOTIFICATION_EMAIL', defaultValue: 'annu.exe@gmail.com', description: 'Email address for status notifications (leave blank to disable)')
     }
 
     environment {
-        AWS_ACCESS_KEY_ID     = credentials('aws-credentials-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-credentials-id')
-        AWS_DEFAULT_REGION    = 'ap-south-1'
-        TF_DIR                = 'terraform'
+        AWS_DEFAULT_REGION = 'ap-south-1'
+        TF_DIR             = 'terraform'
     }
 
     stages {
         stage('Checkout') {
             steps {
                 checkoutSCM()
+            }
+        }
+
+        stage('Diagnostics & Tool Versioning') {
+            steps {
+                echo "=== Diagnostics & Tool Version Info ==="
+                sh 'terraform version'
+                sh 'aws --version'
+                sh 'python3 --version'
+            }
+        }
+
+        stage('Validate Parameters') {
+            steps {
+                script {
+                    echo "Validating input parameters..."
+                    if (params.NOTIFICATION_EMAIL && params.NOTIFICATION_EMAIL.trim() != "") {
+                        def emailPattern = ~/^([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})$/
+                        if (!(params.NOTIFICATION_EMAIL.trim() =~ emailPattern)) {
+                            error "Validation Failed: NOTIFICATION_EMAIL '${params.NOTIFICATION_EMAIL}' is not a valid format."
+                        }
+                    }
+                    echo "All parameters are valid."
+                }
             }
         }
 
@@ -43,35 +72,55 @@ pipeline {
         stage('Bootstrap S3 Backend') {
             when { expression { params.ACTION == 'apply' } }
             steps {
-                bootstrapBackend()
+                withCredentials([
+                    string(credentialsId: 'aws-credentials-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-credentials-id', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    bootstrapBackend()
+                }
             }
         }
 
         stage('Provision Infrastructure') {
             when { expression { params.ACTION == 'apply' } }
             steps {
-                runTerraform(
-                    action: params.ACTION,
-                    environment: params.ENVIRONMENT,
-                    directory: env.TF_DIR
-                )
+                withCredentials([
+                    string(credentialsId: 'aws-credentials-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-credentials-id', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    runTerraform(
+                        action: params.ACTION,
+                        environment: params.ENVIRONMENT,
+                        directory: env.TF_DIR
+                    )
+                }
             }
         }
 
         stage('Configure Application Services') {
             when { expression { params.ACTION == 'apply' } }
             steps {
-                triggerDownstreamConfig(
-                    environment: params.ENVIRONMENT,
-                    notificationEmail: params.NOTIFICATION_EMAIL
-                )
+                withCredentials([
+                    string(credentialsId: 'aws-credentials-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-credentials-id', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    triggerDownstreamConfig(
+                        environment: params.ENVIRONMENT,
+                        notificationEmail: params.NOTIFICATION_EMAIL
+                    )
+                }
             }
         }
 
         stage('Teardown Infrastructure') {
             when { expression { params.ACTION == 'destroy' } }
             steps {
-                teardownInfra()
+                withCredentials([
+                    string(credentialsId: 'aws-credentials-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-credentials-id', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    teardownInfra()
+                }
             }
         }
     }
