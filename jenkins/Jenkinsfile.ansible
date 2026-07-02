@@ -6,7 +6,6 @@ pipeline {
     options {
         timeout(time: 2, unit: 'HOURS')
         timestamps()
-        ansiColor('xterm')
         buildDiscarder(logRotator(numToKeepStr: '5', artifactNumToKeepStr: '5'))
     }
 
