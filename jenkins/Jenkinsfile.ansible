@@ -14,6 +14,7 @@ pipeline {
         string(name: 'EFS_ID', defaultValue: '', description: 'EFS File System ID')
         choice(name: 'ENVIRONMENT', choices: ['dev'], description: 'Target environment')
         string(name: 'NOTIFICATION_EMAIL', defaultValue: '', description: 'Email address for status notifications (leave blank to disable)')
+        string(name: 'ALB_DNS_NAME', defaultValue: '', description: 'DNS name of the Application Load Balancer')
     }
 
     environment {
@@ -131,19 +132,59 @@ pipeline {
             cleanWs()
         }
         success {
-            sendNotification(
-                status: 'SUCCESS',
-                email: params.NOTIFICATION_EMAIL,
-                subject: "SUCCESS: Jenkins Downstream Job '${env.JOB_NAME}' [Build #${env.BUILD_NUMBER}]",
-                body: "The Ansible host configuration succeeded!\n\nView details: ${env.BUILD_URL}"
-            )
+            script {
+                def grafanaUrl = params.ALB_DNS_NAME ? "http://${params.ALB_DNS_NAME}" : "http://<alb-dns-name>"
+                sendNotification(
+                    status: 'SUCCESS',
+                    email: params.NOTIFICATION_EMAIL,
+                    subject: "SUCCESS: Deploy Observability Stack [Build #${env.BUILD_NUMBER}]",
+                    body: """Dear Team,
+
+We are pleased to inform you that the monitoring and observability stack has been successfully deployed and configured.
+
+Deployment Details:
+-------------------
+- Environment: ${params.ENVIRONMENT.toUpperCase()}
+- Bastion Host IP: ${params.BASTION_IP}
+- EFS File System ID: ${params.EFS_ID}
+- Grafana Portal: ${grafanaUrl}
+- Jenkins Job: ${env.JOB_NAME}
+- Build Number: #${env.BUILD_NUMBER}
+
+You can access the Grafana portal directly using the link above. Use the configured credentials to log in.
+
+To view the detailed Jenkins execution logs, please visit:
+${env.BUILD_URL}
+
+Best Regards,
+Jenkins Observability Pipeline
+"""
+                )
+            }
         }
         failure {
             sendNotification(
                 status: 'FAILURE',
                 email: params.NOTIFICATION_EMAIL,
-                subject: "FAILURE: Jenkins Downstream Job '${env.JOB_NAME}' [Build #${env.BUILD_NUMBER}]",
-                body: "The Ansible host configuration failed!\n\nView details: ${env.BUILD_URL}"
+                subject: "FAILURE: Deploy Observability Stack [Build #${env.BUILD_NUMBER}]",
+                body: """Dear Team,
+
+We regret to inform you that the monitoring and observability stack deployment has failed during the Ansible host configuration stage.
+
+Failure Details:
+----------------
+- Environment: ${params.ENVIRONMENT.toUpperCase()}
+- Bastion Host IP: ${params.BASTION_IP}
+- EFS File System ID: ${params.EFS_ID}
+- Jenkins Job: ${env.JOB_NAME}
+- Build Number: #${env.BUILD_NUMBER}
+
+Please review the build execution logs to diagnose and resolve the issue:
+${env.BUILD_URL}
+
+Best Regards,
+Jenkins Observability Pipeline
+"""
             )
         }
     }
