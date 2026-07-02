@@ -23,6 +23,23 @@ pipeline {
             }
         }
 
+        stage('Terraform CI Checks') {
+            steps {
+                echo "Running CI checks for main Terraform configuration..."
+                dir(env.TF_DIR) {
+                    sh 'terraform fmt -check'
+                    sh 'terraform init -backend=false'
+                    sh 'terraform validate'
+                }
+                echo "Running CI checks for Terraform bootstrap configuration..."
+                dir('terraform-bootstrap') {
+                    sh 'terraform fmt -check'
+                    sh 'terraform init -backend=false'
+                    sh 'terraform validate'
+                }
+            }
+        }
+
         stage('Bootstrap S3 Backend') {
             when { expression { params.ACTION == 'apply' } }
             steps {
