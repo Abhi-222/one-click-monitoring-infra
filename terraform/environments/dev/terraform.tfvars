@@ -12,3 +12,7 @@ asg_max_size            = 2
 backend_bucket_name     = "monitoring-stack-dev-state-yogesh"
 backend_lock_table_name = "monitoring-stack-dev-lock-yogesh"
 project_owner           = "Yogesh Singh"
+
+
+# Add your specific AMI ID here
+ami_id                  = "ami-0d351f1b760a30161"

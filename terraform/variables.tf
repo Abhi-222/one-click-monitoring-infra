@@ -55,7 +55,7 @@ variable "allowed_ssh_cidr" {
 variable "key_name" {
   description = "SSH key pair name for EC2 instances."
   type        = string
-  default     = "check"
+  default     = "yogesh-check"
 }
 
 variable "ansible_user" {
