@@ -1,4 +1,9 @@
 resource "aws_launch_template" "this" {
+  name_prefix   = "monitoring-${var.environment}-"
+  
+  # Reads the dynamic ID provided directly by the AWS parameter store
+  image_id      = data.aws_ssm_parameter.al2023_ami.value
+  
   name_prefix   = "${var.name_prefix}-"
   image_id      = var.ami_id
   instance_type = var.instance_type
