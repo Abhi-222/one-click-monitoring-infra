@@ -1,6 +1,6 @@
 environment             = "dev"
 aws_region              = "ap-south-1"
-key_name                = "check"
+key_name                = "yogesh-check"
 allowed_ssh_cidr        = "0.0.0.0/0"
 instance_type           = "t3.micro"
 prometheus_port         = 9090
