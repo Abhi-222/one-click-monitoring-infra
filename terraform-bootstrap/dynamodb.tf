@@ -21,7 +21,7 @@ resource "aws_dynamodb_table" "terraform_lock" {
 
   tags = {
     Name        = "terraform-lock-table"
-    Owner       = "Anurag Maurya"
+    Owner       = "Yogesh Singh"
     Environment = "dev"
     ManagedBy   = "Terraform"
     Project     = "Monitoring Infrastructure"
