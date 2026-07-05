@@ -13,7 +13,7 @@ variable "environment" {
 variable "backend_bucket_name" {
   description = "S3 bucket name for Terraform remote state."
   type        = string
-  default     = "anurag-monitoring-tfstate-ap-south-1"
+  default     = "yogesh-monitoring-tfstate-ap-south-1"
 }
 
 variable "backend_lock_table_name" {
@@ -25,7 +25,7 @@ variable "backend_lock_table_name" {
 variable "project_owner" {
   description = "Project owner tag."
   type        = string
-  default     = "Anurag Maurya"
+  default     = "Yogesh Singh"
 }
 
 variable "vpc_cidr" {
@@ -55,7 +55,7 @@ variable "allowed_ssh_cidr" {
 variable "key_name" {
   description = "SSH key pair name for EC2 instances."
   type        = string
-  default     = "assignment-6"
+  default     = "check"
 }
 
 variable "ansible_user" {
@@ -116,7 +116,7 @@ variable "tags" {
   description = "Common tags applied to all resources."
   type        = map(string)
   default = {
-    Owner       = "Anurag Maurya"
+    Owner       = "Yogesh Singh"
     Project     = "Monitoring Infrastructure"
     Environment = "dev"
     ManagedBy   = "Terraform"
