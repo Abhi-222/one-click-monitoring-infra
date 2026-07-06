@@ -115,12 +115,12 @@ pipeline {
                             string(credentialsId: 'aws-secret-credentials-id', variable: 'AWS_SECRET_ACCESS_KEY')
                         ]) {
                              // 🌟 FIXED: Triple double-quotes with explicit params mapping
-                            sh '''
+                            sh """
                             ansible-playbook -i inventory/aws_ec2.yml site.yml \
                                 -e "bastion_ip=${params.BASTION_IP.trim()}" \
                                 -e "grafana_efs_file_system_id=${params.EFS_ID.trim()}" \
                                 -e "ansible_ssh_private_key_file=${SSH_KEY_FILE}"
-                            '''
+                            """
                         }
                     }
                 }
