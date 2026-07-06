@@ -1,6 +1,15 @@
+# Add this declaration block inside the module file
+data "aws_ssm_parameter" "al2023_ami" {
+  name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
+}
+
 resource "aws_launch_template" "this" {
+  #name_prefix   = "monitoring-${var.environment}-"
+  image_id      = data.aws_ssm_parameter.al2023_ami.value
+
+
   name_prefix   = "${var.name_prefix}-"
-  image_id      = var.ami_id
+  #image_id      = var.ami_id
   instance_type = var.instance_type
   key_name      = var.key_name
 
