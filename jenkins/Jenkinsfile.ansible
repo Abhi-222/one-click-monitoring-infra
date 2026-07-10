@@ -115,12 +115,12 @@ pipeline {
                             string(credentialsId: 'aws-secret-credentials-id', variable: 'AWS_SECRET_ACCESS_KEY')
                         ]) {
                              // 🌟 FIXED: Triple double-quotes with explicit params mapping
-                            sh "chmod 400 ${SSH_KEY_PATH}" // Double insurance
+                            sh "chmod 400 ${env.SSH_KEY_FILE}" // Double insurance
                             sh """
                             ansible-playbook -i inventory/aws_ec2.yml site.yml \
-                                -e "bastion_ip=${BASTION_IP}" \
-                                -e "grafana_efs_file_system_id=${EFS_ID}" \
-                                -e "ansible_ssh_private_key_file=${SSH_KEY_FILE}"
+                                -e "bastion_ip=${env.BASTION_IP}" \
+                                -e "grafana_efs_file_system_id=${env.EFS_ID}" \
+                                -e "ansible_ssh_private_key_file=${env.SSH_KEY_FILE}"
                             """
                         }
                     }
