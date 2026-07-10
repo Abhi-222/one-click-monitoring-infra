@@ -101,32 +101,38 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                dir(env.ANSIBLE_DIR) {
-                    echo "Deploying monitoring configuration stack..."
+    stage('Deploy') {
+    steps {
+        dir(env.ANSIBLE_DIR) {
+            echo "Deploying monitoring configuration stack..."
+            withEnv([
+                "BASTION_IP=${params.BASTION_IP.trim()}",
+                "EFS_ID=${params.EFS_ID.trim()}"
+            ]) {
+                withCredentials([
+                    file(credentialsId: 'aws-ssh-key-id', variable: 'SSH_KEY_FILE'),
+                    string(credentialsId: 'aws-credentials-id', variable: 'AWS_ACCESS_KEY_ID'),
+                    string(credentialsId: 'aws-secret-credentials-id', variable: 'AWS_SECRET_ACCESS_KEY')
+                ]) {
+                    sh 'chmod 400 $SSH_KEY_FILE' 
+                    
+                    // 🌟 FIXED: Passing AWS keys explicitly to the playbook process environment
                     withEnv([
-                        "BASTION_IP=${params.BASTION_IP.trim()}",
-                        "EFS_ID=${params.EFS_ID.trim()}"
+                        "AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID",
+                        "AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY"
                     ]) {
-                        withCredentials([
-                            file(credentialsId: 'aws-ssh-key-id', variable: 'SSH_KEY_FILE'),
-                            string(credentialsId: 'aws-credentials-id', variable: 'AWS_ACCESS_KEY_ID'),
-                            string(credentialsId: 'aws-secret-credentials-id', variable: 'AWS_SECRET_ACCESS_KEY')
-                        ]) {
-                             // 🌟 FIXED: Triple double-quotes with explicit params mapping
-                            sh 'chmod 400 $SSH_KEY_FILE' // Double insurance
-                            sh '''
-                            ansible-playbook -i inventory/aws_ec2.yml site.yml \
-                                -e "bastion_ip=$BASTION_IP" \
-                                -e "grafana_efs_file_system_id=$EFS_ID" \
-                                -e "ansible_ssh_private_key_file=$SSH_KEY_FILE"
-                            '''
-                        }
+                        sh '''
+                        ansible-playbook -i inventory/aws_ec2.yml site.yml \
+                            -e "bastion_ip=$BASTION_IP" \
+                            -e "grafana_efs_file_system_id=$EFS_ID" \
+                            -e "ansible_ssh_private_key_file=$SSH_KEY_FILE"
+                        '''
                     }
                 }
             }
         }
+    }
+}
     }
 
     post {
